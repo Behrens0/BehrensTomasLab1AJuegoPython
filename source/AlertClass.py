@@ -1,7 +1,7 @@
 import pygame
 from config import *
 class Alert(pygame.sprite.Sprite):
-    def __init__(self, image, x, y):
+    def __init__(self, image: str, x: int, y: int):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(image).convert_alpha()

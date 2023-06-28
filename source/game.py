@@ -3,8 +3,6 @@ import random
 from config import *
 from PlayerClass import Player
 from rocket import Rocket
-import time
-import math
 from AlertClass import Alert
 from Explossion import Explossion
 from ZapperClass import RotatingTrap
@@ -12,7 +10,7 @@ from Laser import Laser
 from Button import Button
 
 class Game:
-    def __init__(self, screen_width, screen_height, title,background_entry_img, background_img, player_imgs: list, background_music, jetpack_start, jetpack_stop, jetpack_fire, land_metal_sound):
+    def __init__(self, screen_width: int, screen_height: int, title: str,background_entry_img: str, background_img: str, player_imgs: list, background_music: str, jetpack_start: str, jetpack_stop: str, jetpack_fire: str, land_metal_sound: str, start_image: str, exit_image: str, menu_button:str, pause_image: str, unpause_button: str, options_button: str, hard_button: str, back_button: str):
         pygame.init()
         
         
@@ -21,7 +19,7 @@ class Game:
         
         #score
         self.score = 0
-        self.score_speed = 10
+        self.score_speed = 50
         self.best_score = 0
         #play game
         self.playing = False
@@ -60,34 +58,34 @@ class Game:
         self.barrys = pygame.sprite.Group()
         
         #loading buttons
-        self.button_img = pygame.image.load(START_IMG).convert_alpha()
-        self.start_button = Button(SCREEN_WIDTH // 2 - self.button_img.get_width() // 2, 0, self.button_img, 1)
+        self.button_img = pygame.image.load(start_image).convert_alpha()
+        self.start_button = Button(screen_width // 2 - self.button_img.get_width() // 2, 0, self.button_img, 1)
         
-        self.exit_img = pygame.image.load(EXIT_IMG).convert_alpha()
-        self.exit_button = Button(SCREEN_WIDTH // 2 - self.exit_img.get_width() // 2, SCREEN_HEIGHT - self.exit_img.get_height(), self.exit_img, 1)
-        
-        
-        self.menu_img = pygame.image.load(MENU_BUTTON).convert_alpha()
-        self.menu_button = Button(SCREEN_WIDTH -200, SCREEN_HEIGHT - self.menu_img.get_height() // 2 - 50, self.menu_img, 2)
-        
-        self.pause_img = pygame.image.load(PAUSE_IMG).convert_alpha()
-        self.pause_button = Button(SCREEN_WIDTH - self.pause_img.get_width() * 0.8, 0, self.pause_img, 0.8)
-        
-        self.unpause_img = pygame.image.load(UNPAUSE_BUTTON).convert_alpha()
-        self.unpause_button = Button(SCREEN_WIDTH - 200, 0, self.unpause_img, 0.7)
-        
-        self.options_img = pygame.image.load(OPTIONS_BUTTON).convert_alpha()
-        self.options_button = Button(SCREEN_WIDTH // 2 - self.options_img.get_width() // 2, SCREEN_HEIGHT // 2 - self.options_img.get_height() // 2, self.options_img, 1)
+        self.exit_img = pygame.image.load(exit_image).convert_alpha()
+        self.exit_button = Button(screen_width // 2 - self.exit_img.get_width() // 2, screen_height - self.exit_img.get_height(), self.exit_img, 1)
         
         
-        self.hard_img = pygame.image.load(HARD_BUTTON).convert_alpha()
-        self.hard_button = Button(SCREEN_WIDTH // 2 - self.hard_img.get_width() // 2 - 170, SCREEN_HEIGHT // 2 - self.hard_img.get_height() // 2, self.hard_img, 0.5)
+        self.menu_img = pygame.image.load(menu_button).convert_alpha()
+        self.menu_button = Button(screen_width -200, screen_height - self.menu_img.get_height() // 2 - 50, self.menu_img, 2)
         
-        self.back_img = pygame.image.load(BACK_BUTTON).convert_alpha()
-        self.back_button = Button(SCREEN_WIDTH // 2 - self.back_img.get_width() // 2 - 290, SCREEN_HEIGHT // 2 - self.back_img.get_height() + 100, self.back_img, 1)
+        self.pause_img = pygame.image.load(pause_image).convert_alpha()
+        self.pause_button = Button(screen_width - self.pause_img.get_width() * 0.8, 0, self.pause_img, 0.8)
+        
+        self.unpause_img = pygame.image.load(unpause_button).convert_alpha()
+        self.unpause_button = Button(screen_width - 200, 0, self.unpause_img, 0.7)
+        
+        self.options_img = pygame.image.load(options_button).convert_alpha()
+        self.options_button = Button(screen_width // 2 - self.options_img.get_width() // 2, screen_height // 2 - self.options_img.get_height() // 2, self.options_img, 1)
+        
+        
+        self.hard_img = pygame.image.load(hard_button).convert_alpha()
+        self.hard_button = Button(screen_width // 2 - self.hard_img.get_width() // 2 - 170, SCREEN_HEIGHT // 2 - self.hard_img.get_height() // 2, self.hard_img, 0.5)
+        
+        self.back_img = pygame.image.load(back_button).convert_alpha()
+        self.back_button = Button(screen_width // 2 - self.back_img.get_width() // 2 - 290, SCREEN_HEIGHT // 2 - self.back_img.get_height() + 100, self.back_img, 1)
         
         #player
-        self.barry = Player(0, SCREEN_HEIGHT // 2, self.barry_images, BARRY_LIVES, BARRY_SPEED, BULLET_SOUND, JUMPING_PATH_BARRY, DEATH_PATH_BARRY, "player")
+        self.barry = Player(0, screen_height // 2, self.barry_images, BARRY_LIVES, BARRY_SPEED, BULLET_SOUND, JUMPING_PATH_BARRY, DEATH_PATH_BARRY, "player")
         self.sprites.add(self.barry)
         
         
@@ -108,7 +106,7 @@ class Game:
         self.pause_time = 0
         
         #handle gravity
-        self.gravity = 1.3
+        self.gravity = 1.7
         self.fall_count = 0
         self.jump_count = 0
         
@@ -156,7 +154,8 @@ class Game:
         self.flag_rocket = True
         self.difficulty_adjusted = False
         self.flag_options = False
-    
+        self.flag_highest_score = True
+
     def reset_game(self):
         self.sprites.empty()
         self.rockets.empty()
@@ -376,14 +375,13 @@ class Game:
     Handles the scoring mechanism in the game. Increases the score at a specific score speed interval,
     and adjusts the score speed based on specific conditions.
     """
-        
-        if self.current_time % self.score_speed == 0:
-            if not self.score_adjusted:
-                self.score +=1
-                if self.score % 50 == 0:
-                    self.score_speed -=1
-        else:
-            self.score_adjusted = False
+        if self.score_speed> 0:
+            if self.current_time % self.score_speed == 0:
+                if not self.score_adjusted:
+                    self.score +=1
+
+            else:
+                self.score_adjusted = False
     
     def pause(self):
         """
@@ -691,27 +689,27 @@ class Game:
                             case 2:
                                 x = SCREEN_WIDTH // 2
                                 if i == 0:
-                                    y = ROOF + 30 + 60
+                                    y = ROOF + 30 + LASER_HEIGHT
                                 else:
-                                    y = ROOF + 60 * 5 + FLOOR
+                                    y = ROOF + LASER_HEIGHT * 5 + FLOOR
                             case 3:
                                 x = SCREEN_WIDTH // 2
                                 if i == 0:
                                     y = ROOF + 30
                                 elif i == 1:
-                                    y = ROOF + 30 + 60
+                                    y = ROOF + 30 + LASER_HEIGHT
                                 else:
-                                    y = ROOF + 60 * 5 + FLOOR
+                                    y = ROOF + LASER_HEIGHT * 5 + FLOOR
                             case 4:
                                 x = SCREEN_WIDTH // 2
                                 if i == 0:
                                     y = ROOF + 30
                                 elif i == 1:
-                                    y = ROOF + 30 + 60
+                                    y = ROOF + 30 + LASER_HEIGHT
                                 elif i == 2:
-                                    y = ROOF + 30 + 60*4
+                                    y = ROOF + 30 + LASER_HEIGHT*4
                                 else:
-                                    y = ROOF + 60*5 + FLOOR
+                                    y = ROOF + LASER_HEIGHT*5 + FLOOR
 
     
                         self.last_laser_time = self.current_time
@@ -731,5 +729,5 @@ class Game:
                 self.flag_rocket = True
                 laser.kill()
     
-game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE,BACKDROP_ENTRY, BACKGROUND_IMG, BARRYS, BACKGROUND_MUSIC, JETPACK_PLAIN_START_SOUND, JETPACK_PLAIN_STOP_SOUND, JETPACK_PLAIN_FIRE_SOUND, LAND_METAL_SOUND)
+game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE,BACKDROP_ENTRY, BACKGROUND_IMG, BARRYS, BACKGROUND_MUSIC, JETPACK_PLAIN_START_SOUND, JETPACK_PLAIN_STOP_SOUND, JETPACK_PLAIN_FIRE_SOUND, LAND_METAL_SOUND, START_IMG, EXIT_IMG, MENU_BUTTON, PAUSE_IMG, UNPAUSE_BUTTON, OPTIONS_BUTTON, HARD_BUTTON, BACK_BUTTON)
 game.start()
